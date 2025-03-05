@@ -7,7 +7,7 @@ from urllib3.exceptions import BodyNotHttplibCompatible
 BASE_URL = "https://reqres.in/api/users/"
 
 
-def test_get_user():
+def test_user_crud():
     with sync_playwright() as p:
 
         browser = p.chromium.launch()
@@ -16,7 +16,9 @@ def test_get_user():
 
         get_user(page)
         get_users_list(page)
-        create_nre_user(page)
+        create_new_user(page)
+        update_user(page)
+        delete_user(page)
 
         browser.close()
 
@@ -32,12 +34,8 @@ def get_users_list(page):
     assert response.status == 200
 
 
-def create_nre_user(page):
-
-    body = {
-        "name": "Fer",
-        "job": "TAE"
-    }
+def create_new_user(page):
+    body = { "name": "Fer", "job": "TAE" }
 
     response = page.request.post(BASE_URL, data=body)
 
@@ -45,3 +43,14 @@ def create_nre_user(page):
     response_json = response.json()
     assert "id" in response_json
     assert "createdAt" in response_json
+
+def update_user(page):
+    body = { "name": "morpheus", "job": "zion resident" }
+    response = page.request.put(BASE_URL+"2", data=body)
+    assert response.status == 200
+    # response_json = response.json()
+
+
+def delete_user(page):
+    response = page.request.delete(BASE_URL + "2")
+    assert response.status == 204
